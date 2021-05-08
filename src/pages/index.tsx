@@ -76,7 +76,7 @@ export default function Home() {
 
     apiNewHomolog.post('usuario/autenticar', {
       email: 'felipej2626@gmail.com',
-      senha: 'Test@1234'
+      senha: 'Teste@1234'
     }).then(data => {
       setResponseApiNewHomolog({
         isLoading: false,
