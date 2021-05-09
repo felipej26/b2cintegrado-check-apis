@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
+import { Loading } from '../components/Loading'
 import { apiHomolog, apiNewHomolog, apiNewProd, apiProd } from '../services/api'
 import styles from '../styles/Home.module.css'
 
-type Reponse = {
+type ReponseAPI = {
   isLoading: boolean
   codeStatus: number
   error: string
@@ -14,18 +15,20 @@ const defaultResponse = {
   error: ''
 }
 
+const defaultData = {
+  email: 'felipej2626@gmail.com',
+  senha: 'Teste@1234'
+}
+
 export default function Home() {
 
-  const [responseApiProd, setResponseApiProd] = useState<Reponse>(defaultResponse)
-  const [responseApiNewProd, setResponseApiNewProd] = useState<Reponse>(defaultResponse)
-  const [responseApiHomolog, setResponseApiHomolog] = useState<Reponse>(defaultResponse)
-  const [responseApiNewHomolog, setResponseApiNewHomolog] = useState<Reponse>(defaultResponse)
+  const [responseApiProd, setResponseApiProd] = useState<ReponseAPI>(defaultResponse)
+  const [responseApiNewProd, setResponseApiNewProd] = useState<ReponseAPI>(defaultResponse)
+  const [responseApiHomolog, setResponseApiHomolog] = useState<ReponseAPI>(defaultResponse)
+  const [responseApiNewHomolog, setResponseApiNewHomolog] = useState<ReponseAPI>(defaultResponse)
 
   useEffect(() => {
-    apiProd.post('usuario/autenticar', {
-      email: 'felipej2626@gmail.com',
-      senha: 'Teste@1234'
-    }).then(data => {
+    apiProd.post('usuario/autenticar', defaultData).then(data => {
       setResponseApiProd({
         isLoading: false,
         codeStatus: data.status,
@@ -40,10 +43,7 @@ export default function Home() {
       })
     })
 
-    apiNewProd.post('usuario/autenticar', {
-      email: 'felipej2626@gmail.com',
-      senha: 'Teste@1234'
-    }).then(data => {
+    apiNewProd.post('usuario/autenticar', defaultData).then(data => {
       setResponseApiNewProd({
         isLoading: false,
         codeStatus: data.status,
@@ -57,10 +57,7 @@ export default function Home() {
       })
     })
 
-    apiHomolog.post('usuario/autenticar', {
-      email: 'felipej2626@gmail.com',
-      senha: 'Teste@1234'
-    }).then(data => {
+    apiHomolog.post('usuario/autenticar', defaultData).then(data => {
       setResponseApiHomolog({
         isLoading: false,
         codeStatus: data.status,
@@ -74,10 +71,7 @@ export default function Home() {
       })
     })
 
-    apiNewHomolog.post('usuario/autenticar', {
-      email: 'felipej2626@gmail.com',
-      senha: 'Teste@1234'
-    }).then(data => {
+    apiNewHomolog.post('usuario/autenticar', defaultData).then(data => {
       setResponseApiNewHomolog({
         isLoading: false,
         codeStatus: data.status,
@@ -93,34 +87,76 @@ export default function Home() {
   }, [])
 
   function formatError(error: string) {
-    return <p>{error === 'Network Error' ? 'CORS Error' : error}</p>
+    return (
+      <div className={styles.containerResponseMessage}>
+        <div className={styles.redAlert} />
+        <p>{error === 'Network Error' ? 'CORS Error' : error}</p>
+      </div>
+    )
+  }
+
+  function formatSuccessMessage() {
+    return (
+      <div className={styles.containerResponseMessage}>
+        <div className={styles.greenAlert} />
+        <p>OK</p>
+      </div>
+    )
+  }
+
+  function renderAPIInfo(apiURL: string, response: ReponseAPI) {
+    return (
+      <>
+        <p>{apiURL}</p>
+        {response.isLoading ? (
+          <Loading />
+        ) : (
+          <>
+            {response.codeStatus > 0 && <p>Code Status: {response.codeStatus}</p>}
+
+            {response.codeStatus >= 200 && response.codeStatus < 300 
+              ? formatSuccessMessage() 
+              : formatError(response.error)
+            }
+          </>
+        )}
+      </>
+    )
   }
 
   return (
-    <div>
-      <h2>Antiga API Prod</h2>
-      <p>https://ib0fq39q8g.execute-api.sa-east-1.amazonaws.com/prod/api/v1/</p>
-      <p>Carregando: {responseApiProd.isLoading ? 'Sim' : 'Não'}</p>
-      <p>Code Status: {responseApiProd.codeStatus}</p>
-      {formatError(responseApiProd.error)}
+    <div className={styles.container}>
+      <div className={styles.apiBlock}> 
+        <h2>Antiga API Prod</h2>
+        {renderAPIInfo(
+          'https://ib0fq39q8g.execute-api.sa-east-1.amazonaws.com/prod/api/v1/', 
+          responseApiProd
+        )}
+      </div>
 
-      <h2>Nova API Prod</h2>
-      <p>https://api.b2cintegrado.com.br/api/v1/</p>
-      <p>Carregando: {responseApiNewProd.isLoading ? 'Sim' : 'Não'}</p>
-      <p>Code Status: {responseApiNewProd.codeStatus}</p>
-      {formatError(responseApiNewProd.error)}
+      <div className={styles.apiBlock}> 
+        <h2>Nova API Prod</h2>
+        {renderAPIInfo(
+          'https://api.b2cintegrado.com.br/api/v1/', 
+          responseApiNewProd
+        )}
+      </div>
       
-      <h2>Antiga API Homolog</h2>
-      <p>https://s7k146zm2a.execute-api.sa-east-1.amazonaws.com/dev/api/v1/</p>
-      <p>Carregando: {responseApiHomolog.isLoading ? 'Sim' : 'Não'}</p>
-      <p>Code Status: {responseApiHomolog.codeStatus}</p>
-      {formatError(responseApiHomolog.error)}
+      <div className={styles.apiBlock}> 
+        <h2>Antiga API Homolog</h2>
+        {renderAPIInfo(
+          'https://s7k146zm2a.execute-api.sa-east-1.amazonaws.com/dev/api/v1/', 
+          responseApiHomolog
+        )}
+      </div>
 
-      <h2>Nova API Homolog</h2>
-      <p>https://apihomolog.b2cintegrado.com.br/api/v1/</p>
-      <p>Carregando: {responseApiNewHomolog.isLoading ? 'Sim' : 'Não'}</p>
-      <p>Code Status: {responseApiNewHomolog.codeStatus}</p>
-      {formatError(responseApiNewHomolog.error)}
+      <div className={styles.apiBlock}> 
+        <h2>Nova API Homolog</h2>
+        {renderAPIInfo(
+          'https://apihomolog.b2cintegrado.com.br/api/v1/', 
+          responseApiNewHomolog
+        )}
+      </div>
     </div>
   )
 }
