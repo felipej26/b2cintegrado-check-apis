@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Loading } from '../components/Loading'
-import { apiHomolog, apiNewHomolog, apiNewProd, apiProd } from '../services/api'
+import { apiNewDev, apiHomolog, apiNewHomolog, apiNewProd, apiProd } from '../services/api'
 import styles from '../styles/Home.module.css'
 
 type ReponseAPI = {
@@ -26,6 +26,7 @@ export default function Home() {
   const [responseApiNewProd, setResponseApiNewProd] = useState<ReponseAPI>(defaultResponse)
   const [responseApiHomolog, setResponseApiHomolog] = useState<ReponseAPI>(defaultResponse)
   const [responseApiNewHomolog, setResponseApiNewHomolog] = useState<ReponseAPI>(defaultResponse)
+  const [responseApiNewDev, setResponseApiNewDev] = useState<ReponseAPI>(defaultResponse)
 
   useEffect(() => {
     apiProd.post('usuario/autenticar', defaultData).then(data => {
@@ -79,6 +80,20 @@ export default function Home() {
       })
     }).catch(error => {
       setResponseApiNewHomolog({
+        isLoading: false,
+        codeStatus: 0,
+        error: error.message
+      })
+    })
+
+    apiNewDev.post('usuario/autenticar', defaultData).then(data => {
+      setResponseApiNewDev({
+        isLoading: false,
+        codeStatus: data.status,
+        error: ''
+      })
+    }).catch(error => {
+      setResponseApiNewDev({
         isLoading: false,
         codeStatus: 0,
         error: error.message
@@ -155,6 +170,14 @@ export default function Home() {
         {renderAPIInfo(
           'https://apihomolog.b2cintegrado.com.br/api/v1/', 
           responseApiNewHomolog
+        )}
+      </div>
+
+      <div className={styles.apiBlock}> 
+        <h2>Nova API Develop</h2>
+        {renderAPIInfo(
+          'https://daitw8bi5a.execute-api.sa-east-1.amazonaws.com/dev/v1/', 
+          responseApiNewDev
         )}
       </div>
     </div>

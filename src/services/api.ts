@@ -27,3 +27,10 @@ export const apiNewHomolog =  axios.create({
     'content-type': 'application/json'
   }
 })
+
+export const apiNewDev = axios.create({
+  baseURL: 'https://daitw8bi5a.execute-api.sa-east-1.amazonaws.com/dev/v1/',
+  headers: {
+    'content-type': 'application/json'
+  }
+})
